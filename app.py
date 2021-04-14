@@ -1,11 +1,22 @@
 #app.py
+import os
+
 from datetime import date
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
+# Points SQLAlchemy to Heroku database
+# Replaces postgres:// with postgresql://
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL').replace("://", "ql://", 1)
+# Gets rid of a warning
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
+migrate = Migrate()
+migrate.init_app(app, db)
 
 # IMPORTANT: This must be AFTER creating db variable to prevent
 # circular import issues
